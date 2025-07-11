@@ -11,13 +11,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-class RocketRepositoryImplementationTest extends RepositorySamples {
+class RocketRepositoryImplementationTest extends SamplesRepository {
 
     private RocketRepositoryImplementation repository;
 
     @BeforeEach
     void setUp() {
-        repository = RocketRepositoryImplementation.of(sampleRepository);
+        repository = RocketRepositoryImplementation.of(sampleRocketRepository);
     }
 
     @Test
@@ -27,7 +27,7 @@ class RocketRepositoryImplementationTest extends RepositorySamples {
         repository.addRocket(rocketNo4);
 
         //then
-        assertThat(sampleRepository.values())
+        assertThat(sampleRocketRepository.values())
                 .hasSize(4);
     }
 
@@ -41,7 +41,7 @@ class RocketRepositoryImplementationTest extends RepositorySamples {
         repository.deleteRocketById(uuid);
 
         //then
-        assertThat(sampleRepository.values())
+        assertThat(sampleRocketRepository.values())
                 .hasSize(2);
     }
 
@@ -55,7 +55,7 @@ class RocketRepositoryImplementationTest extends RepositorySamples {
         repository.updateRocketById(uuid, rocketNo4);
 
         //then
-        assertThat(sampleRepository.get(uuid).getName())
+        assertThat(sampleRocketRepository.get(uuid).getName())
                 .isEqualTo(rocketNo4.getName());
     }
 

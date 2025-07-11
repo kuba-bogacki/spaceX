@@ -1,26 +1,28 @@
 package com.example.model;
 
-import com.example.model.type.RocketStatus;
+import com.example.model.type.MissionStatus;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Rocket {
+public class Mission {
 
     private UUID id;
     private String name;
-    private UUID missionId;
-    private RocketStatus rocketStatus;
+    private MissionStatus missionStatus;
+    private List<UUID> rocketList = new ArrayList<>();
 
-    public static Rocket of(String name) {
-        return Rocket.builder()
+    public static Mission of(String name) {
+        return Mission.builder()
                 .id(UUID.randomUUID())
                 .name(name)
-                .rocketStatus(RocketStatus.ON_GROUND)
+                .missionStatus(MissionStatus.SCHEDULED)
                 .build();
     }
 }
