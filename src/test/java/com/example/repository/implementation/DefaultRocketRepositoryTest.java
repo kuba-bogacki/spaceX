@@ -13,13 +13,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-class RocketRepositoryImplementationTest extends SamplesRepository {
+class DefaultRocketRepositoryTest extends SamplesRepository {
 
-    private RocketRepositoryImplementation repository;
+    private DefaultRocketRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = RocketRepositoryImplementation.of(sampleRocketRepository);
+        repository = DefaultRocketRepository.of(sampleRocketRepository);
     }
 
     @Test
@@ -106,7 +106,7 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
     @DisplayName("Should return empty list if no rocket exist in database")
     void test_07() {
         //given
-        repository = RocketRepositoryImplementation.of(new HashMap<>());
+        repository = DefaultRocketRepository.of(new HashMap<>());
 
         //when
         final var result = repository.getAllRockets();

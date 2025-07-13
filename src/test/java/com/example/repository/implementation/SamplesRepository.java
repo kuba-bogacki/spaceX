@@ -14,10 +14,10 @@ class SamplesRepository {
     final String rocketNameNo3 = "Phoenix";
     final String rocketNameNo4 = "Viper";
 
-    final String missionNameNo1 = "Falcon";
-    final String missionNameNo2 = "Dragon";
-    final String missionNameNo3 = "Phoenix";
-    final String missionNameNo4 = "Viper";
+    final String missionNameNo1 = "Nebula";
+    final String missionNameNo2 = "Vortex";
+    final String missionNameNo3 = "Aegis";
+    final String missionNameNo4 = "Nova";
 
     final Rocket rocketNo1 = Rocket.of(rocketNameNo1);
     final Rocket rocketNo2 = Rocket.of(rocketNameNo2);

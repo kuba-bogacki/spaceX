@@ -14,7 +14,7 @@ import java.util.UUID;
 import static java.util.Objects.requireNonNull;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MissionRepositoryImplementation implements MissionRepository {
+public class DefaultMissionRepository implements MissionRepository {
 
     private static final String MISSION_ENTITY_NOT_FOUND = "Mission with id [%s] not found";
 
@@ -44,8 +44,8 @@ public class MissionRepositoryImplementation implements MissionRepository {
                 .toList();
     }
 
-    public static MissionRepositoryImplementation of(Map<UUID, Mission> missionsDatabaseProvider) {
+    public static DefaultMissionRepository of(Map<UUID, Mission> missionsDatabaseProvider) {
         requireNonNull(missionsDatabaseProvider, "Missions database provider cannot be null");
-        return new MissionRepositoryImplementation(missionsDatabaseProvider);
+        return new DefaultMissionRepository(missionsDatabaseProvider);
     }
 }

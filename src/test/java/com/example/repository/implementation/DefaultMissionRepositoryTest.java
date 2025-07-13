@@ -13,13 +13,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-class MissionRepositoryImplementationTest extends SamplesRepository {
+class DefaultMissionRepositoryTest extends SamplesRepository {
 
-    private MissionRepositoryImplementation repository;
+    private DefaultMissionRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = MissionRepositoryImplementation.of(sampleMissionRepository);
+        repository = DefaultMissionRepository.of(sampleMissionRepository);
     }
 
     @Test
@@ -106,7 +106,7 @@ class MissionRepositoryImplementationTest extends SamplesRepository {
     @DisplayName("Should return empty list if no mission exist in database")
     void test_07() {
         //given
-        repository = MissionRepositoryImplementation.of(new HashMap<>());
+        repository = DefaultMissionRepository.of(new HashMap<>());
 
         //when
         final var result = repository.getAllMissions();

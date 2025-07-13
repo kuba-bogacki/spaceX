@@ -1,17 +1,17 @@
 package com.example.sevice.implementation;
 
-import com.example.repository.exception.MissionRepositoryException;
-import com.example.repository.exception.RocketRepositoryException;
-import com.example.sevice.exception.RocketSimulationServiceException;
 import com.example.model.Mission;
 import com.example.model.Rocket;
 import com.example.model.type.MissionStatus;
 import com.example.model.type.RocketStatus;
 import com.example.repository.MissionRepository;
 import com.example.repository.RocketRepository;
-import com.example.repository.implementation.MissionRepositoryImplementation;
-import com.example.repository.implementation.RocketRepositoryImplementation;
-import com.example.sevice.SimulationService;
+import com.example.repository.exception.MissionRepositoryException;
+import com.example.repository.exception.RocketRepositoryException;
+import com.example.repository.implementation.DefaultMissionRepository;
+import com.example.repository.implementation.DefaultRocketRepository;
+import com.example.sevice.RocketSimulationService;
+import com.example.sevice.exception.RocketSimulationServiceException;
 import com.example.sevice.exception.SpaceXDragonException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SimulationServiceImplementation implements SimulationService {
+public class DefaultRocketSimulationService implements RocketSimulationService {
 
     private final MissionRepository missionRepository;
     private final RocketRepository rocketRepository;
@@ -92,37 +92,17 @@ public class SimulationServiceImplementation implements SimulationService {
         }
     }
 
-    @Override
-    public void addNewMission(String missionName) {
-
-    }
-
-    @Override
-    public void assignRocketsToTheMission(UUID missionId, UUID... rocketIds) {
-
-    }
-
-    @Override
-    public void changeMissionStatus(UUID missionId, MissionStatus missionStatus) {
-
-    }
-
-    @Override
-    public String getSummaryMissions() {
-        return "";
-    }
-
-    public static SimulationServiceImplementation prod() {
-        return SimulationServiceImplementation.builder()
-                .missionRepository(MissionRepositoryImplementation.of(new HashMap<>()))
-                .rocketRepository(RocketRepositoryImplementation.of(new HashMap<>()))
+    public static DefaultRocketSimulationService prod() {
+        return DefaultRocketSimulationService.builder()
+                .missionRepository(DefaultMissionRepository.of(new HashMap<>()))
+                .rocketRepository(DefaultRocketRepository.of(new HashMap<>()))
                 .build();
     }
 
-    public static SimulationServiceImplementation of(MissionRepository missionRepository, RocketRepository rocketRepository) {
+    public static DefaultRocketSimulationService of(MissionRepository missionRepository, RocketRepository rocketRepository) {
         requireNonNull(missionRepository, "Mission repository cannot be null");
         requireNonNull(rocketRepository,  "Rocket repository cannot be null");
-        return SimulationServiceImplementation.builder()
+        return DefaultRocketSimulationService.builder()
                 .missionRepository(missionRepository)
                 .rocketRepository(rocketRepository)
                 .build();

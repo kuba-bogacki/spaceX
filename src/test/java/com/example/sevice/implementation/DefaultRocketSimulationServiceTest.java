@@ -1,11 +1,12 @@
 package com.example.sevice.implementation;
 
-import com.example.repository.exception.MissionRepositoryException;
-import com.example.repository.exception.RocketRepositoryException;
 import com.example.model.Mission;
 import com.example.model.Rocket;
 import com.example.model.type.MissionStatus;
 import com.example.model.type.RocketStatus;
+import com.example.repository.exception.MissionRepositoryException;
+import com.example.repository.exception.RocketRepositoryException;
+import com.example.sevice.exception.SpaceXDragonException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,28 +17,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class SimulationServiceImplementationTest extends SamplesRepository {
+class DefaultRocketSimulationServiceTest extends SamplesRepository {
 
     private FakeMissionRepository missionRepository;
     private FakeRocketRepository rocketRepository;
-    private SimulationServiceImplementation simulationServiceImplementation;
+    private DefaultRocketSimulationService rocketSimulationService;
 
     @BeforeEach
     void setUp() {
         missionRepository = new FakeMissionRepository();
         rocketRepository = new FakeRocketRepository();
-        simulationServiceImplementation = SimulationServiceImplementation.of(missionRepository, rocketRepository);
+        rocketSimulationService = DefaultRocketSimulationService.of(missionRepository, rocketRepository);
     }
 
     @Test
     @DisplayName("Should add new rocket to repository with provided name")
     void test_01() {
         //when
-        simulationServiceImplementation.addNewRocket(rocketNameNo1);
+        rocketSimulationService.addNewRocket(rocketNameNo1);
 
         //then
         assertAll(
                 () -> assertThat(rocketRepository.getSpyRocket().getName()).isEqualTo(rocketNameNo1),
+                () -> assertThat(rocketRepository.getSpyRocket().getRocketStatus()).isEqualTo(RocketStatus.ON_GROUND),
                 () -> assertThat(rocketRepository.getAllRockets().size()).isEqualTo(1)
         );
     }
@@ -50,7 +52,7 @@ class SimulationServiceImplementationTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1);
 
         //when
-        simulationServiceImplementation.assignRocketToMission(rocketNo1.getId(), missionNo1.getId());
+        rocketSimulationService.assignRocketToMission(rocketNo1.getId(), missionNo1.getId());
 
         //then
         assertAll(
@@ -73,7 +75,7 @@ class SimulationServiceImplementationTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1, missionNo2);
 
         //when
-        simulationServiceImplementation.assignRocketToMission(rocketNo1.getId(), missionNo1.getId());
+        rocketSimulationService.assignRocketToMission(rocketNo1.getId(), missionNo1.getId());
 
         //then
         assertAll(
@@ -94,11 +96,11 @@ class SimulationServiceImplementationTest extends SamplesRepository {
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
+                catchException(() -> rocketSimulationService.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining("Current rocket is already assigned to other mission");
     }
 
@@ -112,15 +114,15 @@ class SimulationServiceImplementationTest extends SamplesRepository {
                 throw new RocketRepositoryException(String.format("Rocket with id [%s] not found", rocketId));
             }
         };
-        simulationServiceImplementation = SimulationServiceImplementation.of(missionRepository, rocketRepository);
+        rocketSimulationService = DefaultRocketSimulationService.of(missionRepository, rocketRepository);
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
+                catchException(() -> rocketSimulationService.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining(String.format("Rocket with id [%s] not found", rocketNo1.getId()));
     }
 
@@ -134,15 +136,15 @@ class SimulationServiceImplementationTest extends SamplesRepository {
                 throw new MissionRepositoryException(String.format("Mission with id [%s] not found", missionId));
             }
         };
-        simulationServiceImplementation = SimulationServiceImplementation.of(missionRepository, rocketRepository);
+        rocketSimulationService = DefaultRocketSimulationService.of(missionRepository, rocketRepository);
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
+                catchException(() -> rocketSimulationService.assignRocketToMission(rocketNo1.getId(), missionNo1.getId()));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining(String.format("Mission with id [%s] not found", missionNo1.getId()));
     }
 
@@ -158,7 +160,7 @@ class SimulationServiceImplementationTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1);
 
         //when
-        simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE);
+        rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE);
 
         //then
         assertAll(
@@ -179,7 +181,7 @@ class SimulationServiceImplementationTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1);
 
         //when
-        simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR);
+        rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR);
 
         //then
         assertAll(
@@ -196,7 +198,7 @@ class SimulationServiceImplementationTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1);
 
         //when
-        simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR);
+        rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR);
 
         //then
         assertAll(
@@ -217,11 +219,11 @@ class SimulationServiceImplementationTest extends SamplesRepository {
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE));
+                catchException(() -> rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining("Current rocket should not be assigned anymore to a mission");
     }
 
@@ -235,15 +237,15 @@ class SimulationServiceImplementationTest extends SamplesRepository {
                 throw new RocketRepositoryException(String.format("Rocket with id [%s] not found", rocketId));
             }
         };
-        simulationServiceImplementation = SimulationServiceImplementation.of(missionRepository, rocketRepository);
+        rocketSimulationService = DefaultRocketSimulationService.of(missionRepository, rocketRepository);
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE));
+                catchException(() -> rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_SPACE));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining(String.format("Rocket with id [%s] not found", rocketNo1.getId()));
     }
 
@@ -263,15 +265,15 @@ class SimulationServiceImplementationTest extends SamplesRepository {
                 throw new MissionRepositoryException(String.format("Mission with id [%s] not found", missionId));
             }
         };
-        simulationServiceImplementation = SimulationServiceImplementation.of(missionRepository, rocketRepository);
+        rocketSimulationService = DefaultRocketSimulationService.of(missionRepository, rocketRepository);
 
         //when
         final var expectedException =
-                catchException(() -> simulationServiceImplementation.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR));
+                catchException(() -> rocketSimulationService.changeRocketStatus(rocketNo1.getId(), RocketStatus.IN_REPAIR));
 
         //then
         assertThat(expectedException)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining(String.format("Mission with id [%s] not found", missionNo1.getId()));
     }
 }

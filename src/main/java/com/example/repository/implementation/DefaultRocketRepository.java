@@ -14,7 +14,7 @@ import java.util.UUID;
 import static java.util.Objects.requireNonNull;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class RocketRepositoryImplementation implements RocketRepository {
+public class DefaultRocketRepository implements RocketRepository {
 
     private static final String ROCKET_ENTITY_NOT_FOUND = "Rocket with id [%s] not found";
 
@@ -44,8 +44,8 @@ public class RocketRepositoryImplementation implements RocketRepository {
                 .toList();
     }
 
-    public static RocketRepositoryImplementation of(Map<UUID, Rocket> rocketsDatabaseProvider) {
+    public static DefaultRocketRepository of(Map<UUID, Rocket> rocketsDatabaseProvider) {
         requireNonNull(rocketsDatabaseProvider, "Rockets database provider cannot be null");
-        return new RocketRepositoryImplementation(rocketsDatabaseProvider);
+        return new DefaultRocketRepository(rocketsDatabaseProvider);
     }
 }
