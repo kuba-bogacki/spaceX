@@ -12,6 +12,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <org.projectlombok.version>1.18.34</org.projectlombok.version>
+        <org.junit.jupiter>5.10.2</org.junit.jupiter>
+        <org.junit.platform>1.10.2</org.junit.platform>
         <org.assertj.version>3.27.3</org.assertj.version>
     </properties>
 
@@ -27,7 +29,14 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>${org.junit.jupiter}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>${org.junit.platform}</version>
             <scope>test</scope>
         </dependency>
 

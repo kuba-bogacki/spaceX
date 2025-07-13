@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.repository.exception;
 
 public class RocketRepositoryException extends Exception {
 

@@ -1,6 +1,6 @@
 package com.example.repository.implementation;
 
-import com.example.exception.RocketRepositoryException;
+import com.example.repository.exception.RocketRepositoryException;
 import com.example.model.Rocket;
 import com.example.repository.RocketRepository;
 import lombok.AccessLevel;
@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
@@ -15,35 +16,31 @@ import static java.util.Objects.requireNonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RocketRepositoryImplementation implements RocketRepository {
 
+    private static final String ROCKET_ENTITY_NOT_FOUND = "Rocket with id [%s] not found";
+
     private final Map<UUID, Rocket> rocketsDatabaseProvider;
 
     @Override
     public void addRocket(Rocket rocket) {
-        this.rocketsDatabaseProvider.put(rocket.getId(), rocket);
+        rocketsDatabaseProvider.put(rocket.getId(), rocket);
     }
 
     @Override
-    public void deleteRocketById(UUID rocketId) {
-        this.rocketsDatabaseProvider.remove(rocketId);
+    public void updateRocket(UUID rocketId, Rocket rocket) throws RocketRepositoryException {
+        Optional.ofNullable(rocketsDatabaseProvider.get(rocketId))
+                .map(rocketEntity -> rocketsDatabaseProvider.replace(rocketEntity.getId(), rocket))
+                .orElseThrow(() -> new RocketRepositoryException(String.format(ROCKET_ENTITY_NOT_FOUND, rocketId)));
     }
 
     @Override
-    public void updateRocketById(UUID rocketId, Rocket rocket) {
-        var rocketEntity = this.rocketsDatabaseProvider.get(rocketId);
-        if (rocketEntity == null) {
-            throw new RocketRepositoryException(String.format("Impossible to find rocket with provided id: %s", rocketId));
-        }
-        this.rocketsDatabaseProvider.replace(rocketId, rocket);
-    }
-
-    @Override
-    public Rocket getRocketById(UUID rocketId) {
-        return this.rocketsDatabaseProvider.get(rocketId);
+    public Rocket getRocketById(UUID rocketId) throws RocketRepositoryException {
+        return Optional.ofNullable(rocketsDatabaseProvider.get(rocketId))
+                .orElseThrow(() -> new RocketRepositoryException(String.format(ROCKET_ENTITY_NOT_FOUND, rocketId)));
     }
 
     @Override
     public List<Rocket> getAllRockets() {
-        return this.rocketsDatabaseProvider.values().stream()
+        return rocketsDatabaseProvider.values().stream()
                 .toList();
     }
 

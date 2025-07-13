@@ -1,6 +1,8 @@
 package com.example.repository.implementation;
 
-import com.example.exception.MissionRepositoryException;
+import com.example.repository.exception.MissionRepositoryException;
+import com.example.model.type.MissionStatus;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
-public class MissionRepositoryImplementationTest extends SamplesRepository {
+class MissionRepositoryImplementationTest extends SamplesRepository {
 
     private MissionRepositoryImplementation repository;
 
@@ -32,27 +34,14 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
-    @DisplayName("Should delete mission from database")
+    @SneakyThrows
+    @DisplayName("Should update mission if mission with provided id exist in database")
     void test_02() {
         //given
         UUID uuid = missionNo1.getId();
 
         //when
-        repository.deleteMissionById(uuid);
-
-        //then
-        assertThat(sampleMissionRepository.values())
-                .hasSize(2);
-    }
-
-    @Test
-    @DisplayName("Should update mission if mission with provided id exist in database")
-    void test_03() {
-        //given
-        UUID uuid = missionNo1.getId();
-
-        //when
-        repository.updateMissionById(uuid, missionNo4);
+        repository.updateMission(uuid, missionNo4);
 
         //then
         assertThat(sampleMissionRepository.get(uuid).getName())
@@ -61,12 +50,12 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
 
     @Test
     @DisplayName("Should throw an exception if mission to update not exist in database")
-    void test_04() {
+    void test_03() {
         //given
         UUID randomUuid = UUID.randomUUID();
 
         //when
-        final var expectedException = catchException(() -> repository.updateMissionById(randomUuid, missionNo4));
+        final var expectedException = catchException(() -> repository.updateMission(randomUuid, missionNo4));
 
         //then
         assertThat(expectedException)
@@ -74,8 +63,9 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
+    @SneakyThrows
     @DisplayName("Should return mission if mission exist in database")
-    void test_05() {
+    void test_04() {
         //given
         UUID uuid = missionNo3.getId();
 
@@ -88,22 +78,22 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
-    @DisplayName("Should return null if mission not exist in database")
-    void test_06() {
+    @DisplayName("Should throw an exception if mission not exist in database")
+    void test_05() {
         //given
         UUID uuid = missionNo4.getId();
 
         //when
-        final var result = repository.getMissionById(uuid);
+        final var result = catchException(() -> repository.getMissionById(uuid));
 
         //then
         assertThat(result)
-                .isNull();
+                .isInstanceOf(MissionRepositoryException.class);
     }
 
     @Test
     @DisplayName("Should return mission list if some rockets exists in database")
-    void test_07() {
+    void test_06() {
         //when
         final var result = repository.getAllMissions();
 
@@ -114,7 +104,7 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
 
     @Test
     @DisplayName("Should return empty list if no mission exist in database")
-    void test_08() {
+    void test_07() {
         //given
         repository = MissionRepositoryImplementation.of(new HashMap<>());
 
@@ -124,5 +114,17 @@ public class MissionRepositoryImplementationTest extends SamplesRepository {
         //then
         assertThat(result)
                 .isEmpty();
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("Should create mission with default 'scheduled' status")
+    void test_08() {
+        //when
+        repository.addMission(missionNo1);
+
+        //then
+        assertThat(repository.getMissionById(missionNo1.getId()).getMissionStatus())
+                .isEqualTo(MissionStatus.SCHEDULED);
     }
 }

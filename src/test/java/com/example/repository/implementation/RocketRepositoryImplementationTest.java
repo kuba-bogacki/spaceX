@@ -1,6 +1,8 @@
 package com.example.repository.implementation;
 
-import com.example.exception.RocketRepositoryException;
+import com.example.repository.exception.RocketRepositoryException;
+import com.example.model.type.RocketStatus;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,27 +34,14 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
-    @DisplayName("Should delete rocket from database")
+    @SneakyThrows
+    @DisplayName("Should update rocket if rocket with provided id exist in database")
     void test_02() {
         //given
         UUID uuid = rocketNo1.getId();
 
         //when
-        repository.deleteRocketById(uuid);
-
-        //then
-        assertThat(sampleRocketRepository.values())
-                .hasSize(2);
-    }
-
-    @Test
-    @DisplayName("Should update rocket if rocket with provided id exist in database")
-    void test_03() {
-        //given
-        UUID uuid = rocketNo1.getId();
-
-        //when
-        repository.updateRocketById(uuid, rocketNo4);
+        repository.updateRocket(uuid, rocketNo4);
 
         //then
         assertThat(sampleRocketRepository.get(uuid).getName())
@@ -61,12 +50,12 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
 
     @Test
     @DisplayName("Should throw an exception if rocket to update not exist in database")
-    void test_04() {
+    void test_03() {
         //given
         UUID randomUuid = UUID.randomUUID();
 
         //when
-        final var expectedException = catchException(() -> repository.updateRocketById(randomUuid, rocketNo4));
+        final var expectedException = catchException(() -> repository.updateRocket(randomUuid, rocketNo4));
 
         //then
         assertThat(expectedException)
@@ -74,8 +63,9 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
+    @SneakyThrows
     @DisplayName("Should return rocket if rocket exist in database")
-    void test_05() {
+    void test_04() {
         //given
         UUID uuid = rocketNo3.getId();
 
@@ -88,22 +78,22 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
     }
 
     @Test
-    @DisplayName("Should return null if rocket not exist in database")
-    void test_06() {
+    @DisplayName("Should throw an exception if rocket not exist in database")
+    void test_05() {
         //given
         UUID uuid = rocketNo4.getId();
 
         //when
-        final var result = repository.getRocketById(uuid);
+        final var result = catchException(() -> repository.getRocketById(uuid));
 
         //then
         assertThat(result)
-                .isNull();
+                .isInstanceOf(RocketRepositoryException.class);
     }
 
     @Test
     @DisplayName("Should return rocket list if some rockets exists in database")
-    void test_07() {
+    void test_06() {
         //when
         final var result = repository.getAllRockets();
 
@@ -114,7 +104,7 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
 
     @Test
     @DisplayName("Should return empty list if no rocket exist in database")
-    void test_08() {
+    void test_07() {
         //given
         repository = RocketRepositoryImplementation.of(new HashMap<>());
 
@@ -124,5 +114,17 @@ class RocketRepositoryImplementationTest extends SamplesRepository {
         //then
         assertThat(result)
                 .isEmpty();
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("Should create rocket with default 'on ground' status")
+    void test_08() {
+        //when
+        repository.addRocket(rocketNo1);
+
+        //then
+        assertThat(repository.getRocketById(rocketNo1.getId()).getRocketStatus())
+                    .isEqualTo(RocketStatus.ON_GROUND);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.sevice.exception;
 
 public class MissionSimulationServiceException extends RuntimeException {
 

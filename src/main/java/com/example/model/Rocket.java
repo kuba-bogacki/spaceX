@@ -13,7 +13,9 @@ public class Rocket {
 
     private UUID id;
     private String name;
+    @Setter
     private UUID missionId;
+    @Setter
     private RocketStatus rocketStatus;
 
     public static Rocket of(String name) {
