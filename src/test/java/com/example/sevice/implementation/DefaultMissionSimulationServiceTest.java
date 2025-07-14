@@ -1,6 +1,7 @@
 package com.example.sevice.implementation;
 
 import com.example.model.Mission;
+import com.example.model.Rocket;
 import com.example.model.type.MissionStatus;
 import com.example.model.type.RocketStatus;
 import com.example.repository.exception.MissionRepositoryException;
@@ -278,8 +279,8 @@ class DefaultMissionSimulationServiceTest extends SamplesRepository {
     @DisplayName("Should return summary of missions by number of rockets assigned")
     void test_14() {
         //given
-        rocketRepository.createRocketRepository(createRocketsList().iterator().next());
-        missionRepository.createMissionRepository(createMissionsList().iterator().next());
+        rocketRepository.createRocketRepository(createRocketsList().toArray(new Rocket[0]));
+        missionRepository.createMissionRepository(createMissionsList().toArray(new Mission[0]));
 
         //when
         final var result = missionSimulationService.getSummaryMissions();

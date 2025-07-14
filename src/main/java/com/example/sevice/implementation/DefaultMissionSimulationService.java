@@ -129,7 +129,34 @@ public class DefaultMissionSimulationService implements MissionSimulationService
 
     @Override
     public String getSummaryMissions() {
-        return "";
+        var stringBuilder = new StringBuilder();
+        var rockets = rocketRepository.getAllRockets();
+        var sortedMissions = missionRepository.getAllMissions().stream()
+                .sorted(Comparator
+                        .comparing((Mission mission) -> mission.getRocketList().size())
+                        .thenComparing(Mission::getName).reversed())
+                .toList();
+
+        for (var mission : sortedMissions) {
+            stringBuilder
+                    .append(mission.toString())
+                    .append("\n");
+            mission.getRocketList().forEach(rocketId -> {
+                stringBuilder
+                        .append(getRocketRepresentation(rockets, rocketId, mission.getId()))
+                        .append("\n");
+            });
+        }
+        return stringBuilder.toString();
+    }
+
+    private String getRocketRepresentation(List<Rocket> rockets, UUID rocketId, UUID missionId) {
+        return requireNonNull(rockets.stream()
+                .filter(rocket -> rocket.getId().equals(rocketId))
+                .filter(rocket -> rocket.getMissionId().equals(missionId))
+                .findAny()
+                .orElseThrow()
+                .toString());
     }
 
     public static DefaultMissionSimulationService prod() {
