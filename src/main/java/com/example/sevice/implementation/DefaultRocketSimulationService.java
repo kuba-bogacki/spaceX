@@ -19,6 +19,7 @@ import lombok.Builder;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,12 +32,15 @@ public class DefaultRocketSimulationService implements RocketSimulationService {
 
     @Override
     public void addNewRocket(String rocketName) {
+        requireNonNull(rocketName, "Rocket name cannot be null");
         var rocket = Rocket.of(rocketName);
         rocketRepository.addRocket(rocket);
     }
 
     @Override
     public void assignRocketToMission(UUID rocketId, UUID missionId) {
+        requireNonNull(rocketId, "Rocket id cannot be null");
+        requireNonNull(missionId, "Mission id cannot be null");
         try {
             var rocket = rocketRepository.getRocketById(rocketId);
             var mission = missionRepository.getMissionById(missionId);
@@ -48,10 +52,10 @@ public class DefaultRocketSimulationService implements RocketSimulationService {
             rocket.setMissionId(missionId);
 
             mission.addRocket(rocket.getId());
+            rocketRepository.updateRocket(rocket.getId(), rocket);
+
             boolean someRocketInRepair = isSomeRocketInRepair(mission);
             mission.setMissionStatus(someRocketInRepair ? MissionStatus.PENDING : MissionStatus.IN_PROGRESS);
-
-            rocketRepository.updateRocket(rocket.getId(), rocket);
             missionRepository.updateMission(mission.getId(), mission);
         } catch (RocketRepositoryException | MissionRepositoryException | RocketSimulationServiceException exception) {
             throw new SpaceXDragonException(String.format("Error due assigning rocket to mission: %s", exception.getMessage()));
@@ -66,6 +70,8 @@ public class DefaultRocketSimulationService implements RocketSimulationService {
 
     @Override
     public void changeRocketStatus(UUID rocketId, RocketStatus rocketStatus) {
+        requireNonNull(rocketId, "Rocket id cannot be null");
+        requireNonNull(rocketStatus, "Rocket status cannot be null");
         try {
             var rocket = rocketRepository.getRocketById(rocketId);
 

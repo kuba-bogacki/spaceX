@@ -276,4 +276,68 @@ class DefaultRocketSimulationServiceTest extends SamplesRepository {
                 .isInstanceOf(SpaceXDragonException.class)
                 .hasMessageContaining(String.format("Mission with id [%s] not found", missionNo1.getId()));
     }
+
+    @Test
+    @DisplayName("Should throw an exception if rocket name is null")
+    void test_13() {
+        //given
+        String nullRocketName = null;
+
+        //when
+        final var expectedException =
+                catchException(() -> rocketSimulationService.addNewRocket(nullRocketName));
+
+        //then
+        assertThat(expectedException)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Rocket name cannot be null");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception if rocket id is null")
+    void test_14() {
+        //given
+        UUID nullRocketUuid = null;
+
+        //when
+        final var expectedException =
+                catchException(() -> rocketSimulationService.assignRocketToMission(nullRocketUuid, missionNo1.getId()));
+
+        //then
+        assertThat(expectedException)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Rocket id cannot be null");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception if mission id is null")
+    void test_15() {
+        //given
+        UUID nullMissionUuid = null;
+
+        //when
+        final var expectedException =
+                catchException(() -> rocketSimulationService.assignRocketToMission(rocketNo1.getId(), nullMissionUuid));
+
+        //then
+        assertThat(expectedException)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Mission id cannot be null");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception if rocket status is null")
+    void test_16() {
+        //given
+        RocketStatus nullRocketStatus = null;
+
+        //when
+        final var expectedException =
+                catchException(() -> rocketSimulationService.changeRocketStatus(rocketNo1.getId(), nullRocketStatus));
+
+        //then
+        assertThat(expectedException)
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("Rocket status cannot be null");
+    }
 }

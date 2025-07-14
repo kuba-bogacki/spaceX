@@ -25,7 +25,7 @@ class FakeRocketRepository extends SamplesRepository implements RocketRepository
     }
 
     @Override
-    public void updateRocket(UUID rocketId, Rocket rocket) {
+    public void updateRocket(UUID rocketId, Rocket rocket) throws RocketRepositoryException {
         this.spyRocket = rocket;
         this.rocketUpdated = true;
         sampleRocketRepository.replace(rocketId, rocket);

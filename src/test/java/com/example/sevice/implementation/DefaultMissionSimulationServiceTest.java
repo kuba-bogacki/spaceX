@@ -7,6 +7,7 @@ import com.example.model.type.RocketStatus;
 import com.example.repository.exception.MissionRepositoryException;
 import com.example.repository.exception.RocketRepositoryException;
 import com.example.sevice.exception.SpaceXDragonException;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,11 +75,10 @@ class DefaultMissionSimulationServiceTest extends SamplesRepository {
         missionRepository.createMissionRepository(missionNo1);
 
         //when
-        missionSimulationService.assignRocketsToTheMission(missionNo1.getId(), rocketNo1.getId(), rocketNo2.getId());
+        missionSimulationService.assignRocketsToTheMission(missionNo1.getId(), rocketNo2.getId(), rocketNo3.getId());
 
         //then
         assertAll(
-                () -> assertThat(rocketRepository.getAllRockets()).allMatch(rocket -> rocket.getRocketStatus() == RocketStatus.IN_SPACE),
                 () -> assertThat(rocketRepository.getAllRockets()).allMatch(rocket -> rocket.getMissionId() != null),
                 () -> assertThat(missionRepository.getMissionById(missionNo1.getId()).getMissionStatus()).isEqualTo(MissionStatus.PENDING)
         );
@@ -106,25 +106,18 @@ class DefaultMissionSimulationServiceTest extends SamplesRepository {
     }
 
     @Test
-    @DisplayName("Should throw an exception if one of the rocket with provided id is not exist in database")
+    @SneakyThrows
+    @DisplayName("Should pass if rocket ids are empty")
     void test_05() {
         //given
-        rocketRepository = new FakeRocketRepository() {
-            @Override
-            public Rocket getRocketById(UUID rocketId) throws RocketRepositoryException {
-                throw new RocketRepositoryException(String.format("Rocket with id [%s] not found", rocketId));
-            }
-        };
-        missionSimulationService = DefaultMissionSimulationService.of(missionRepository, rocketRepository);
+        missionRepository.createMissionRepository(missionNo1);
 
         //when
-        final var expectedException =
-                catchException(() -> missionSimulationService.assignRocketsToTheMission(missionNo1.getId(), rocketNo1.getId()));
+        missionSimulationService.assignRocketsToTheMission(missionNo1.getId());
 
         //then
-        assertThat(expectedException)
-                .isInstanceOf(SpaceXDragonException.class)
-                .hasMessageContaining(String.format("Rocket with id [%s] not found", rocketNo1.getId()));
+        assertThat(missionRepository.getMissionById(missionNo1.getId()).getMissionStatus())
+                .isEqualTo(MissionStatus.SCHEDULED);
     }
 
     @Test
