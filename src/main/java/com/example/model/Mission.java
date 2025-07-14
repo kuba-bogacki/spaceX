@@ -23,6 +23,10 @@ public class Mission {
         rocketList.add(rocketId);
     }
 
+    public void clearRocketList() {
+        rocketList.clear();
+    }
+
     public static Mission of(String name) {
         return Mission.builder()
                 .id(UUID.randomUUID())

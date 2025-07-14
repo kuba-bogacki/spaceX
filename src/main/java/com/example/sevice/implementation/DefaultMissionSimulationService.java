@@ -17,10 +17,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
@@ -91,6 +88,43 @@ public class DefaultMissionSimulationService implements MissionSimulationService
     public void changeMissionStatus(UUID missionId, MissionStatus missionStatus) {
         requireNonNull(missionId, "Mission id cannot be null");
         requireNonNull(missionStatus, "Mission status cannot be null");
+        try {
+            var mission = missionRepository.getMissionById(missionId);
+            if (mission.getMissionStatus() == MissionStatus.ENDED && isBeforeEndedMissionStatus(missionStatus)) {
+                throw new MissionSimulationServiceException("Impossible to change mission status to previous state");
+            }
+
+            if (mission.getMissionStatus() == MissionStatus.SCHEDULED && isInMissionStatus(missionStatus)) {
+                throw new MissionSimulationServiceException("Impossible to change status, no rocket assigned to mission");
+            }
+
+            if (isInMissionStatus(mission.getMissionStatus())) {
+                for (var rocket : getRocketOnMission(mission.getId())) {
+                    rocket.setRocketStatus(RocketStatus.ON_GROUND);
+                    rocketRepository.updateRocket(rocket.getId(), rocket);
+                }
+            }
+
+            mission.setMissionStatus(missionStatus);
+            mission.clearRocketList();
+            missionRepository.updateMission(mission.getId(), mission);
+        } catch (RocketRepositoryException | MissionRepositoryException | MissionSimulationServiceException exception) {
+            throw new SpaceXDragonException(String.format("Error due changing mission status: %s", exception.getMessage()));
+        }
+    }
+
+    private boolean isBeforeEndedMissionStatus(MissionStatus status) {
+        return EnumSet.of(MissionStatus.IN_PROGRESS, MissionStatus.PENDING, MissionStatus.SCHEDULED).contains(status);
+    }
+
+    private boolean isInMissionStatus(MissionStatus status) {
+        return EnumSet.of(MissionStatus.IN_PROGRESS, MissionStatus.PENDING).contains(status);
+    }
+
+    private List<Rocket> getRocketOnMission(UUID missionId) {
+        return rocketRepository.getAllRockets().stream()
+                .filter(rocket -> rocket.getMissionId().equals(missionId))
+                .toList();
     }
 
     @Override
