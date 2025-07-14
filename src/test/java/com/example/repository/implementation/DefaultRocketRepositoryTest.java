@@ -1,7 +1,7 @@
 package com.example.repository.implementation;
 
-import com.example.repository.exception.RocketRepositoryException;
 import com.example.model.type.RocketStatus;
+import com.example.repository.exception.RocketRepositoryException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,7 +1,7 @@
 package com.example.repository;
 
-import com.example.repository.exception.MissionRepositoryException;
 import com.example.model.Mission;
+import com.example.repository.exception.MissionRepositoryException;
 
 import java.util.List;
 import java.util.UUID;

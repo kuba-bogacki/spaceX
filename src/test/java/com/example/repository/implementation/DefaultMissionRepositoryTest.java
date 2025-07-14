@@ -1,7 +1,7 @@
 package com.example.repository.implementation;
 
-import com.example.repository.exception.MissionRepositoryException;
 import com.example.model.type.MissionStatus;
+import com.example.repository.exception.MissionRepositoryException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

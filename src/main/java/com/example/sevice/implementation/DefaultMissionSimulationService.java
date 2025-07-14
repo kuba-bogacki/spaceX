@@ -141,11 +141,10 @@ public class DefaultMissionSimulationService implements MissionSimulationService
             stringBuilder
                     .append(mission.toString())
                     .append("\n");
-            mission.getRocketList().forEach(rocketId -> {
-                stringBuilder
-                        .append(getRocketRepresentation(rockets, rocketId, mission.getId()))
-                        .append("\n");
-            });
+            mission.getRocketList()
+                    .forEach(rocketId -> stringBuilder
+                            .append(getRocketRepresentation(rockets, rocketId, mission.getId()))
+                            .append("\n"));
         }
         return stringBuilder.toString();
     }
