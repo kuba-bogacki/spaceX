@@ -56,10 +56,8 @@ public class DefaultMissionSimulationService implements MissionSimulationService
             }
 
             mission.setMissionStatus(mission.getRocketList().isEmpty() ?
-                    MissionStatus.SCHEDULED :
-                    isSomeRocketInRepair(mission.getId()) ?
-                            MissionStatus.PENDING :
-                            MissionStatus.IN_PROGRESS);
+                    MissionStatus.SCHEDULED : isSomeRocketInRepair(mission.getId()) ?
+                            MissionStatus.PENDING : MissionStatus.IN_PROGRESS);
             missionRepository.updateMission(mission.getId(), mission);
         } catch (RocketRepositoryException | MissionRepositoryException | MissionSimulationServiceException exception) {
             throw new SpaceXDragonException(String.format("Error due assigning rockets to mission: %s", exception.getMessage()));
