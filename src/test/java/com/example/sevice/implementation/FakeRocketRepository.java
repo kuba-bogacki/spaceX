@@ -1,8 +1,8 @@
 package com.example.sevice.implementation;
 
-import com.example.repository.exception.RocketRepositoryException;
 import com.example.model.Rocket;
 import com.example.repository.RocketRepository;
+import com.example.repository.exception.RocketRepositoryException;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ class FakeRocketRepository extends SamplesRepository implements RocketRepository
     }
 
     @Override
-    public void updateRocket(UUID rocketId, Rocket rocket) throws RocketRepositoryException {
+    public void updateRocket(UUID rocketId, Rocket rocket) {
         this.spyRocket = rocket;
         this.rocketUpdated = true;
         sampleRocketRepository.replace(rocketId, rocket);

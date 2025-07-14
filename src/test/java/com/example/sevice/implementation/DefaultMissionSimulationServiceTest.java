@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
@@ -271,5 +272,20 @@ class DefaultMissionSimulationServiceTest extends SamplesRepository {
         assertThat(expectedException)
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Mission status cannot be null");
+    }
+
+    @Test
+    @DisplayName("Should return summary of missions by number of rockets assigned")
+    void test_14() {
+        //given
+        rocketRepository.createRocketRepository(createRocketsList().iterator().next());
+        missionRepository.createMissionRepository(createMissionsList().iterator().next());
+
+        //when
+        final var result = missionSimulationService.getSummaryMissions();
+
+        //then
+        assertThat(result)
+                .isEqualTo(summaryOutput);
     }
 }

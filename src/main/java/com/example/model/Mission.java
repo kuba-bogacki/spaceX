@@ -27,6 +27,11 @@ public class Mission {
         rocketList.clear();
     }
 
+    @Override
+    public String toString() {
+        return String.format("• %s - %s - Dragons: %s", name, missionStatus.getDescription(), rocketList.size());
+    }
+
     public static Mission of(String name) {
         return Mission.builder()
                 .id(UUID.randomUUID())

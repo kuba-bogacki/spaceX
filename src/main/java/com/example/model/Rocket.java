@@ -18,6 +18,11 @@ public class Rocket {
     @Setter
     private RocketStatus rocketStatus;
 
+    @Override
+    public String toString() {
+        return String.format("    o %s - %s", name, rocketStatus.getDescription());
+    }
+
     public static Rocket of(String name) {
         return Rocket.builder()
                 .id(UUID.randomUUID())
